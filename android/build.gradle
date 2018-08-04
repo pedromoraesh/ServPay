@@ -28,9 +28,19 @@ android {
 
 repositories {
     mavenCentral()
+    
+    maven {
+        url "https://jitpack.io"
+    }
+
+    maven {
+        url "https://github.com/pagseguro/pagseguro-android-sdk-checkout-in-app/raw/master/repositorio"
+    }
+
 }
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
+    compile 'br.com.uol.pslibs:checkout-in-app:0.0.3'
 }
   
