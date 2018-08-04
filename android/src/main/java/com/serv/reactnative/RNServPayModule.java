@@ -61,6 +61,26 @@ public class RNServPayModule extends ReactContextBaseJavaModule {
         PSCheckout.initTransparent(getCurrentActivity(), psCheckoutConfig);
   }
 
+  private PSCheckoutListener psCheckoutListener = new PSCheckoutListener() {
+    @Override
+    public void onSuccess(PSCheckoutResponse responseVO) {
+      // responseVO.getCode() - Código da transação 
+      // responseVO.getStatus() - Status da transação
+      // responseVO.getMessage() - Mensagem de retorno da transação(Sucesso/falha)
+      Toast.makeText(getCurrentActivity(), "Sucesso: "+responseVO.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onFailure(PSCheckoutResponse responseVO) {
+      Toast.makeText(getCurrentActivity(), "Falhou: "+responseVO.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onProcessing() {
+      Toast.makeText(getCurrentActivity(), "Processando...", Toast.LENGTH_LONG).show();
+    }
+  };
+
   @ReactMethod
   public void payCreditCard(String cpf, String name, String email, String ddd, String phone, String street, 
                     String complement, String addressNumber, String bairro, String city, String state, 
@@ -73,30 +93,10 @@ public class RNServPayModule extends ReactContextBaseJavaModule {
       //installment.setAmount(Double.parseDouble(total)); - Valor a ser parcelado
       //installment.setQuantity(1); - Quantidade de parcelas
 
-      private PSCheckoutListener psCheckoutListener = new PSCheckoutListener() {
-      @Override
-      public void onSuccess(PSCheckoutResponse responseVO) {
-        // responseVO.getCode() - Código da transação 
-        // responseVO.getStatus() - Status da transação
-        // responseVO.getMessage() - Mensagem de retorno da transação(Sucesso/falha)
-        Toast.makeText(getActivity(), "Sucesso: "+responseVO.getMessage(), Toast.LENGTH_LONG).show();
-      }
-
-      @Override
-      public void onFailure(PSCheckoutResponse responseVO) {
-        Toast.makeText(getActivity(), "Falhou: "+responseVO.getMessage(), Toast.LENGTH_LONG).show();
-      }
-
-      @Override
-      public void onProcessing() {
-        Toast.makeText(getActivity(), "Processando...", Toast.LENGTH_LONG).show();
-      }
-    };
-
     PSTransparentDefaultRequest psTransparentDefaultRequest = new PSTransparentDefaultRequest();
     psTransparentDefaultRequest
         .setDocumentNumber(cpf)
-        .setName(name)
+          .setName(name)
         .setEmail(email)
         .setAreaCode(ddd)
         .setPhoneNumber(phone)
@@ -121,29 +121,29 @@ public class RNServPayModule extends ReactContextBaseJavaModule {
     PSCheckout.payTransparentDefault(psTransparentDefaultRequest, psCheckoutListener, (AppCompatActivity) getCurrentActivity());
   }
 
+  private PSBilletListener psBilletListener = new PSBilletListener() {
+    @Override
+    public void onSuccess(PaymentResponseVO responseVO) {
+        // responseVO.getBookletNumber() - número do código de barras do boleto
+        // responseVO.getPaymentLink() - link para download do boleto
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+        // Error
+    }
+
+    @Override
+    public void onProcessing() {
+        // Progress
+    }
+  };
+
   @ReactMethod 
   public void payBillet(String cpf, String name, String email, String ddd, String phone, String street, 
                         String complement, String adressNumber, String bairro, String city, String state, 
                         String country, String cep, Double totalValue, Double valorUnitario, 
                         String description, int quantity){
-
-    private PSBilletListener psBilletListener = new PSBilletListener() {
-      @Override
-      public void onSuccess(PaymentResponseVO responseVO) {
-          // responseVO.getBookletNumber() - número do código de barras do boleto
-          // responseVO.getPaymentLink() - link para download do boleto
-      }
-
-      @Override
-      public void onFailure(Exception e) {
-          // Error
-      }
-
-      @Override
-      public void onProcessing() {
-          // Progress
-      }
-    };
     
     PSBilletRequest psBilletRequest = new PSBilletRequest();
         psBilletRequest
@@ -166,6 +166,4 @@ public class RNServPayModule extends ReactContextBaseJavaModule {
                 .setQuantity(quantity);
         PSCheckout.generateBooklet(psBilletRequest, psBilletListener, (AppCompatActivity) getCurrentActivity());
   }
-  
-  
 }
